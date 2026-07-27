@@ -1,6 +1,6 @@
 # Orchestrator Mode — Design Spec
 
-**Date:** 2026-07-21
+**Date:** 2026-07-21 (updated 2026-07-27: registry scope locked; session-context files added)
 **Status:** Approved (design), pending implementation plan
 
 ## Summary
@@ -26,14 +26,17 @@ orchestration is additive.
 
 - No Discord / queue / file-watch control channel (this session only).
 - No always-on daemon or scheduler.
-- No cross-project shared state beyond the registry + per-run logs.
+- No cross-project shared state beyond the registry, per-run logs, and each
+  project's `SESSION_CONTEXT.md`.
 - No auto-commit, auto-push, or auto-merge — ever.
-- No new agent personas authored inside the target projects; each project uses its
-  own existing `CLAUDE.md` (or none).
+- No full agent personas authored inside the target projects. The only files JZ
+  adds to a target project are `SESSION_CONTEXT.md` and (for the two lacking one) a
+  **minimal** `CLAUDE.md` that just points to it — not a full persona.
 
 ## Architecture
 
-Three artifacts in `my-agent/`, plus a per-run log convention:
+Artifacts in `my-agent/` (persona, registry, dispatch skill), a
+`SESSION_CONTEXT.md` in each target project, and a per-run log convention:
 
 ### 1. Orchestrator persona (`CLAUDE.md`)
 
@@ -62,11 +65,23 @@ absent from this file. One entry per project:
 - has-own-claude-md: yes | no
 ```
 
-Registry is populated by JZ from the Documents dirs and **approved row-by-row by the
-user** before first use. The two trading projects (`alpaca-trading-bot`,
-`covered-call-income`) are marked **extra-locked**: their live-order / execution code
-paths are not to be modified by a spawned agent without an explicit per-run greenlight
-from the user, and the standard "no trades/transactions" denial always applies.
+Registry is populated by JZ and **approved row-by-row by the user** before first use.
+
+**Initial scope — locked to 4 active projects:**
+
+| Project | Path | Class | edit-eligible | own CLAUDE.md |
+|---------|------|-------|---------------|---------------|
+| alpaca-trading-bot | `~/Documents/alpaca-trading-bot` | extra-locked (trading) | yes | yes |
+| covered-call-income | `~/Documents/covered-call-income` | extra-locked (trading) | yes | no → add minimal |
+| cryptoquantproject | `~/Documents/Quant/cryptoquantproject` | extra-locked (crypto) | yes | no → add minimal |
+| my-agent | `~/Documents/my-agent` | self-improve (dispatch-to-self) | yes | yes |
+
+All three trading/crypto projects are **extra-locked**: their live-order / execution
+code paths are not to be modified by a spawned agent without an explicit per-run
+greenlight from the user, and the standard "no trades/transactions" denial always
+applies. `my-agent` is a special case — dispatching there spawns a `claude -p` inside
+JZ's own project dir; JZ flags plainly whenever a dispatch targets itself. JZ never
+dispatches to a project outside this table without the user first adding it.
 
 ### 3. Dispatch skill (`skills/orchestrate/SKILL.md`)
 
@@ -80,13 +95,61 @@ Each spawned run streams output to
 `<scratchpad>/orchestrate/<timestamp>-<project>.log`. JZ reads these to summarize
 results. Logs are ephemeral (scratchpad), not committed.
 
+### 5. Session-context files (`<project>/SESSION_CONTEXT.md`)
+
+One per target project — see the **Session-Context Files** section below.
+
+## Session-Context Files
+
+A compact, curated living-state doc at each project root, so a fresh session (yours or
+a dispatched agent's) orients from one ~1-page read instead of burning tokens
+re-exploring the repo. That token save is the entire purpose, so the file is kept
+bounded — JZ trims as it grows.
+
+- **Filename / location:** `SESSION_CONTEXT.md` at each project root.
+- **Git:** committed to the project repo (durable, travels with the code, history of
+  state changes).
+- **Maintainer:** JZ owns it. JZ refreshes a project's file (a) after any dispatched
+  run to that project, folding in the agent's summary + diff, and (b) on explicit
+  request. **Known gap:** if the user works a session directly without telling JZ, the
+  file goes stale until JZ next touches it — accepted, given JZ-as-maintainer.
+- **Cold-session hook:** `covered-call-income` and `cryptoquantproject` have no
+  `CLAUDE.md`, so JZ adds a **minimal** one whose first instruction is "read
+  `SESSION_CONTEXT.md` before anything." Projects with an existing `CLAUDE.md`
+  (`alpaca-trading-bot`, `my-agent`) get the same one-line pointer added. This makes
+  the token-save apply to the user's own manual cold sessions, not just dispatches.
+
+Template:
+
+```markdown
+# Session Context — <project>
+
+Path: /Users/mrohan/Documents/<project>
+Last updated: <absolute date> by JZ (orchestrator)
+
+## Current state
+- <3–6 bullets: where things stand now>
+
+## Active threads / open questions
+- <in-flight decisions, blockers>
+
+## Next actions
+1. <prioritized>
+
+## Key files / entry points
+- `<path>` — <what it is>
+
+## Recent activity
+- <date> — <what happened> (last 3–5 entries; older trimmed)
+```
+
 ## Dispatch Mechanism
 
 For each resolved target project, JZ runs, in the **background** (parallel):
 
 ```bash
 cd /Users/mrohan/Documents/<project> && \
-claude -p "<user prompt>" \
+claude -p "First read ./SESSION_CONTEXT.md for current state. Then: <user prompt>" \
   --permission-mode acceptEdits \
   --allowedTools "Read Edit Write Bash(npm test:*) Bash(npm run build:*) \
                   Bash(pytest:*) Bash(python:*) Bash(cargo test:*) \
@@ -120,7 +183,10 @@ Notes:
 4. JZ fans out background `claude -p` runs, one per target, logging each.
 5. As each run finishes, JZ reports: project, exit status, summary of what it did,
    and the resulting `git diff`. JZ **never** auto-commits or pushes.
-6. State-mutating follow-ups (commit, push, merge, send) require explicit user
+6. JZ refreshes that project's `SESSION_CONTEXT.md` with the new state / next actions
+   drawn from the run. (This is a write JZ makes to the target project; it is not a
+   commit — the updated file is surfaced in the diff for the user like any other edit.)
+7. State-mutating follow-ups (commit, push, merge, send) require explicit user
    approval, **one per action**, per the existing hard-rules.
 
 ## Error Handling
@@ -134,12 +200,18 @@ Notes:
 
 ## Testing / Verification
 
-- Dry-run: dispatch a trivial read-only prompt ("summarize this repo") to one
-  non-trading project and confirm log capture + reporting format.
+- Dry-run: dispatch a trivial read-only prompt ("summarize this repo") to `my-agent`
+  (the only non-trading project in scope) and confirm log capture + reporting format.
 - Guardrail test: dispatch a prompt that would tempt a push/commit and confirm the
   sub-agent is denied and JZ reports the denial rather than the action succeeding.
 - Registry gate: confirm a prompt naming an unregistered project results in JZ
   refusing to dispatch and asking to register first.
+- Session-context read: confirm a dispatched agent reads `SESSION_CONTEXT.md` first
+  (visible in its log) rather than re-exploring the repo.
+- Session-context write: confirm JZ updates the project's `SESSION_CONTEXT.md` after a
+  run and surfaces it in the diff rather than committing it.
+- Cold-session hook: confirm the minimal `CLAUDE.md` added to `covered-call-income` and
+  `cryptoquantproject` points a fresh manual session to `SESSION_CONTEXT.md`.
 
 ## Open Items Resolved at Implementation Time
 
