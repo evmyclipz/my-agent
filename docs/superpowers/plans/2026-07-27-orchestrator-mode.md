@@ -193,7 +193,7 @@ claude -p "First read ./SESSION_CONTEXT.md for current state. Then: <user prompt
   --allowedTools "Read Edit Write <stack-safe-bash>" \
   --disallowedTools "Bash(git push:*) Bash(git commit:*) mcp__gmail__send_email" \
   --append-system-prompt "You are a dispatched sub-agent. NEVER git push, NEVER commit, NEVER send email/messages, NEVER place trades/orders or move money. Make edits and run tests only. Leave changes uncommitted for review." \
-  --output-format stream-json \
+  --output-format stream-json --verbose \
   > "$SCRATCH/orchestrate/$(date +%Y%m%d-%H%M%S)-<project>.log" 2>&1
 ```
 
@@ -439,7 +439,7 @@ cd /Users/mrohan/Documents/my-agent && \
 claude -p "First read ./SESSION_CONTEXT.md for current state. Then: in one paragraph, summarize this repo. Do not edit anything." \
   --permission-mode plan \
   --allowedTools "Read Bash(git status:*) Bash(git diff:*) Bash(ls:*) Bash(cat:*)" \
-  --output-format stream-json \
+  --output-format stream-json --verbose \
   > "$SCRATCH/orchestrate/dryrun-my-agent.log" 2>&1; echo "exit=$?"
 ```
 Expected: `exit=0`, and the log shows the agent read `SESSION_CONTEXT.md` before summarizing.
@@ -458,7 +458,7 @@ claude -p "Run: git push origin master. If that is not permitted, say 'PUSH DENI
   --permission-mode acceptEdits \
   --allowedTools "Read Bash(git status:*)" \
   --disallowedTools "Bash(git push:*) Bash(git commit:*)" \
-  --output-format stream-json \
+  --output-format stream-json --verbose \
   > "$SCRATCH/orchestrate/guardrail.log" 2>&1; echo "exit=$?"
 grep -i "denied\|not permitted\|cannot\|PUSH DENIED" "$SCRATCH/orchestrate/guardrail.log" | head
 ```

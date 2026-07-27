@@ -23,7 +23,7 @@ claude -p "First read ./SESSION_CONTEXT.md for current state. Then: <user prompt
   --allowedTools "Read Edit Write <stack-safe-bash>" \
   --disallowedTools "Bash(git push:*) Bash(git commit:*) mcp__gmail__send_email" \
   --append-system-prompt "You are a dispatched sub-agent. NEVER git push, NEVER commit, NEVER send email/messages, NEVER place trades/orders or move money. Make edits and run tests only. Leave changes uncommitted for review." \
-  --output-format stream-json \
+  --output-format stream-json --verbose \
   > "$SCRATCH/orchestrate/$(date +%Y%m%d-%H%M%S)-<project>.log" 2>&1
 ```
 
@@ -34,6 +34,7 @@ claude -p "First read ./SESSION_CONTEXT.md for current state. Then: <user prompt
   - Node: `Bash(npm test:*) Bash(npm run build:*) Bash(node:*)`
   - Always add: `Bash(git status:*) Bash(git diff:*) Bash(ls:*) Bash(cat:*)`
 - Why this is safe: in headless mode any tool not on the allowlist is auto-denied, so push/commit/send/trade cannot run. `--disallowedTools` + the system prompt are defense-in-depth.
+- `--verbose` is REQUIRED: `--print` + `--output-format stream-json` errors out without it. Do not remove it.
 
 ## Report
 When each run finishes, report per project:

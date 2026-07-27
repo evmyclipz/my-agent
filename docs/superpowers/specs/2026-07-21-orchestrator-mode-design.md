@@ -165,9 +165,11 @@ claude -p "First read ./SESSION_CONTEXT.md for current state. Then: <user prompt
   --append-system-prompt "You are a dispatched sub-agent. NEVER git push, NEVER \
     commit, NEVER send email or messages, NEVER place trades/orders or move money. \
     Make edits and run tests only. Leave changes uncommitted for review." \
-  --output-format stream-json \
+  --output-format stream-json --verbose \
   > <scratchpad>/orchestrate/<ts>-<project>.log 2>&1
 ```
+
+> Note: `--verbose` is required — `--print` + `--output-format stream-json` errors without it (caught in end-to-end verification).
 
 Notes:
 - `acceptEdits` auto-approves file edits; in headless mode any tool not allowlisted
