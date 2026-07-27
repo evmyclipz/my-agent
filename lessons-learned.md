@@ -4,6 +4,8 @@ Behavioral corrections and confirmed adjustments. JZ proposes entries here; the 
 
 ---
 
+**Last self-review:** none yet
+
 ## Entry Format
 
 ```markdown
