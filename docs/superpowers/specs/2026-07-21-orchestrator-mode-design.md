@@ -50,6 +50,8 @@ Add a top-level **Orchestrator Mode** section to `my-agent/CLAUDE.md`:
 - **Inheritance:** `agent.md` hard-rules bind both modes. Orchestrator mode adds
   no exceptions to them — never send, never trade, never push, no batch mutation
   without an approved list.
+- **Session-start self-learning check:** at session start JZ reads the last-review
+  date and, if ≥ 7 days, runs the self-learning review (see below) before other work.
 
 ### 2. Project registry (`projects-registry.md`)
 
@@ -98,6 +100,11 @@ results. Logs are ephemeral (scratchpad), not committed.
 ### 5. Session-context files (`<project>/SESSION_CONTEXT.md`)
 
 One per target project — see the **Session-Context Files** section below.
+
+### 6. Self-learning skill (`skills/self-learning/SKILL.md`)
+
+A weekly review that mines recent work for recurring mistakes and proposes
+improvements — see the **Self-Learning Review** section below.
 
 ## Session-Context Files
 
@@ -189,9 +196,29 @@ Notes:
 7. State-mutating follow-ups (commit, push, merge, send) require explicit user
    approval, **one per action**, per the existing hard-rules.
 
-## Error Handling
+## Self-Learning Review
 
-- **Spawn failure** (bad dir, CLI error): report per-project, don't abort the batch.
+A recurring review so JZ improves from past mistakes instead of repeating them. Builds
+on the existing `lessons-learned.md` propose→confirm flow — it does not bypass it.
+
+- **Cadence:** weekly.
+- **Trigger:** session-start staleness check (no daemon, consistent with the non-goals).
+  JZ stores the last-review date as a `Last self-review: <date>` marker at the top of
+  `lessons-learned.md`. At session start, if today − marker ≥ 7 days, JZ runs the
+  review before other work; otherwise it does nothing.
+- **Inputs (mistake signals):** recent memory entries, corrections the user gave in
+  recent sessions, dispatch outcomes (denied-tool hits, failed/aborted runs, diffs the
+  user rejected), and existing `lessons-learned.md` entries (to spot repeats).
+- **Output:** JZ proposes new `lessons-learned.md` entries (`Status: Proposed`) using
+  the file's existing entry format. Where a lesson is really a process fix, JZ may also
+  propose a specific edit to `CLAUDE.md`, `agent.md`, or a skill — as a diff, never
+  applied unilaterally.
+- **Confirmation:** JZ presents proposals and waits. Per the existing hard-rule, JZ
+  never silently updates `lessons-learned.md` and never self-applies a lesson. After
+  running (whether or not anything was proposed), JZ updates the `Last self-review`
+  marker to today's date so the cadence resets.
+- **Scope guard:** the review proposes; it never edits persona/skills or dispatches
+  agents on its own. It is a reflection step, not an action step.
 - **Non-zero exit / timeout:** surface the tail of the log; do not retry silently.
 - **Agent hit a denied tool:** expected for push/send/trade attempts; report that the
   sub-agent stopped there and leave it to the user.
@@ -212,6 +239,10 @@ Notes:
   run and surfaces it in the diff rather than committing it.
 - Cold-session hook: confirm the minimal `CLAUDE.md` added to `covered-call-income` and
   `cryptoquantproject` points a fresh manual session to `SESSION_CONTEXT.md`.
+- Self-learning staleness: with a `Last self-review` marker ≥ 7 days old, confirm JZ
+  runs the review at session start; with a recent marker, confirm it does not.
+- Self-learning propose-only: confirm the review proposes `lessons-learned.md` entries
+  (and any persona/skill diffs) and waits — never self-applies — then updates the marker.
 
 ## Open Items Resolved at Implementation Time
 
