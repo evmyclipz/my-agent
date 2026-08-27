@@ -42,3 +42,10 @@ Authoritative map of projects JZ may orchestrate. JZ never dispatches to a proje
 - edit-eligible: yes
 - guardrails: Dispatch-to-self. JZ flags plainly whenever a dispatch targets its own project.
 - has-own-claude-md: yes
+
+### wordsmith
+- path: /Users/mrohan/Documents/wordsmith
+- purpose: Writing agent (persona "Quill") — drafts essays/academic writing and removes AI writing tells from drafts, including ones in Google Docs or an open Word document.
+- edit-eligible: yes
+- guardrails: Never send/submit/publish on the user's behalf. Never overwrites a Google Doc's original content — always creates a new "(revised)" copy. Word write-back only touches documents already open locally (no OneDrive/SharePoint) and must save a timestamped .docx backup before overwriting.
+- has-own-claude-md: yes
