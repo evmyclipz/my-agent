@@ -1,6 +1,6 @@
 # Skill: email-read
 
-Read and search email across inboxes. Provider-agnostic interface — Gmail and Outlook calls are marked `PLACEHOLDER` until their MCPs are connected.
+Read and search email across inboxes. Gmail is connected via `@gongrzhe/server-gmail-autoauth-mcp` (community MCP, credentials at `~/.gmail-mcp/credentials.json`). Outlook is read via `osascript` against Microsoft Outlook.app (Legacy mode) — no MCP involved; the account address is `OUTLOOK_ACCOUNT` in `priorities.md`.
 
 ---
 
@@ -19,7 +19,7 @@ Use this skill when the user asks to:
 Before executing any read operation:
 
 1. **Confirm the inbox.** If the user's request does not specify Gmail or Outlook, check `priorities.md` for a configured default. If no default is set, ask: _"Which inbox — Gmail or Outlook?"_
-2. **Check MCP availability.** If the required MCP is not connected, stop immediately and say: _"The [Gmail/Outlook] MCP is not connected yet. I can't read from that inbox until it is set up."_
+2. **Check access.** Gmail MCP is connected. Outlook is read via `osascript` — before treating a result as "0 messages", confirm `exchange accounts` returns non-empty (see Common Mistakes-style guard in `skills/daily-triage/SKILL.md`); if empty, Outlook has likely reverted to New Outlook mode and needs Help > Revert to Legacy Outlook again. Say so explicitly rather than reporting an empty inbox.
 
 ---
 
@@ -27,58 +27,66 @@ Before executing any read operation:
 
 ### List / fetch recent emails
 
-**Gmail** (`PLACEHOLDER — Gmail MCP not connected`)
+**Gmail** (connected via `mcp__gmail__search_emails`)
 ```
-# PLACEHOLDER: replace with actual Gmail MCP call when connected
-# Expected operation: list messages in inbox, with optional query/filter
-# Parameters: maxResults, query (Gmail search syntax), labelIds
+# Tool: mcp__gmail__search_emails
+# Parameters: query (Gmail search syntax string), maxResults (int)
+# To list recent: query="in:inbox", maxResults=20
 # Returns: list of {id, threadId, snippet, from, subject, date}
 ```
 
-**Outlook** (`PLACEHOLDER — Outlook MCP not connected`)
-```
-# PLACEHOLDER: replace with actual Outlook MCP call when connected
-# Expected operation: list messages in inbox/folder, with optional filter
-# Parameters: top (count), filter (OData), select (fields)
-# Returns: list of {id, conversationId, bodyPreview, from, subject, receivedDateTime}
+**Outlook** (`osascript` against Microsoft Outlook.app, Legacy mode)
+```applescript
+tell application "Microsoft Outlook"
+    set acct to exchange account "<OUTLOOK_ACCOUNT>"
+    set theInbox to mail folder "Inbox" of acct
+    set msgs to messages of theInbox
+    -- per message: subject as string, name of (sender of m) as string,
+    -- time received of m as string, is read of m
+end tell
 ```
 
 ---
 
 ### Search emails
 
-**Gmail** (`PLACEHOLDER — Gmail MCP not connected`)
+**Gmail** (connected via `mcp__gmail__search_emails`)
 ```
-# PLACEHOLDER: replace with actual Gmail MCP call when connected
+# Tool: mcp__gmail__search_emails
 # Uses Gmail search syntax: from:, to:, subject:, before:, after:, is:unread, etc.
-# Parameters: query (string), maxResults
+# Parameters: query (string), maxResults (int)
 # Returns: matching messages
 ```
 
-**Outlook** (`PLACEHOLDER — Outlook MCP not connected`)
-```
-# PLACEHOLDER: replace with actual Outlook MCP call when connected
-# Uses OData $filter or $search
-# Parameters: search (string) or filter (OData expression), top
-# Returns: matching messages
+**Outlook** (`osascript` against Microsoft Outlook.app, Legacy mode)
+```applescript
+tell application "Microsoft Outlook"
+    set acct to exchange account "<OUTLOOK_ACCOUNT>"
+    set theInbox to mail folder "Inbox" of acct
+    -- fetch messages of theInbox, then filter in-script by subject/sender/date
+    -- (AppleScript's "whose" filters work on some properties, e.g.:
+    --  messages of theInbox whose subject contains "keyword")
+end tell
 ```
 
 ---
 
 ### Read a specific email / thread
 
-**Gmail** (`PLACEHOLDER — Gmail MCP not connected`)
+**Gmail** (connected via `mcp__gmail__read_email`)
 ```
-# PLACEHOLDER: replace with actual Gmail MCP call when connected
-# Parameters: messageId or threadId
+# Tool: mcp__gmail__read_email
+# Parameters: messageId (string)
 # Returns: full message body (text/plain preferred), headers, attachments list
 ```
 
-**Outlook** (`PLACEHOLDER — Outlook MCP not connected`)
-```
-# PLACEHOLDER: replace with actual Outlook MCP call when connected
-# Parameters: messageId or conversationId
-# Returns: body (text/plain preferred), from, to, cc, subject, receivedDateTime
+**Outlook** (`osascript` against Microsoft Outlook.app, Legacy mode)
+```applescript
+tell application "Microsoft Outlook"
+    -- given a specific message reference m (e.g. from a prior list/search):
+    -- content of m as string, subject of m as string, name of (sender of m) as string,
+    -- time received of m as string
+end tell
 ```
 
 ---

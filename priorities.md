@@ -28,6 +28,7 @@ Family. Close friends with something real to discuss (not casual chat). Work and
 - Internship coordinator / employer logistics
 - A professor's direct email — not a mass course announcement
 - Bank transaction confirmations
+- **Job application status updates** — any email reporting status on a job already applied to: "your application", "next steps", "interview", "assessment invite", rejection language — regardless of sender. This lands here even from a job-board platform (Handshake, Indeed, etc.) if it's a status update rather than a generic listing.
 
 ---
 
@@ -58,6 +59,9 @@ Purely informational — no reply expected. Receipts, confirmations, FYI forward
 
 **Criteria:**
 Newsletters, marketing emails, promotional offers, mailing lists. Automated system notifications (GitHub alerts, app pings, login alerts).
+- **Job-board blasts** — generic "X is hiring", "new jobs matching your profile", "jobs for you" style subjects from Handshake/Indeed/iHireTechnology/LinkedIn etc. (Contrast with job *status* updates, which are P1 — see above.)
+- **Protected newsletters, never recommend junking**: TLDR, Seeking Alpha — the only two newsletters worth keeping.
+- **Filtered at the source, won't appear in triage at all**: Macro Mornings, MaxDividends, all Substack mail (`no-reply@substack.com`), Google Alerts — see `Next Session Tasks` for filter status.
 
 ---
 
@@ -67,6 +71,7 @@ When a request doesn't specify Gmail or Outlook, JZ should default to:
 
 ```
 DEFAULT_INBOX=Outlook
+OUTLOOK_ACCOUNT=maliper@rose-hulman.edu
 ```
 
 ---
@@ -94,8 +99,9 @@ List active projects in the order JZ should surface them in digests and status c
 
 ## Next Session Tasks
 
-1. Connect Gmail MCP — Google official remote MCP (Pro plan): `gmailmcp.googleapis.com`
-2. Connect Outlook MCP — Anthropic official Microsoft 365 Connector
+1. ~~Connect Gmail MCP~~ — Connected 2026-08-11 via `claude.ai Gmail` connector, tools under `mcp__claude_ai_Gmail__*`.
+2. ~~Connect Outlook MCP~~ — superseded. Microsoft 365 MCP requires tenant admin access we don't have (school account); Outlook is read directly via `osascript` against Microsoft Outlook.app in Legacy mode instead (see `skills/daily-triage/SKILL.md`, `skills/email-read/SKILL.md`).
 3. Connect Discord MCP — `v-3/discordmcp` (simple read/send)
 4. Update `agent.md` — add Discord draft+confirm hard rule (no autonomous sends)
 5. Add `skills/discord-message/SKILL.md` stub
+6. ~~Connect Todoist~~ — Connected 2026-08-11 via `claude.ai Todoist` connector, now the default target for `act-on-triage` tasks.
