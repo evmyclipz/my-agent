@@ -7,7 +7,7 @@ description: Use at session start, or when the user sends a bare greeting with n
 
 ## Overview
 
-A full sweep of Gmail and Outlook, classified against `priorities.md`'s urgency tiers and presented as one combined digest. It observes, classifies, and marks scanned messages read — then *proposes* an action (keep/archive/junk/delete) per message and waits for one explicit batch approval before executing any of it. Mark-read is the one autonomous mutation (agent.md rule 2's sole exception); everything beyond that always waits for the user's "yes." Drafting replies and creating reminders/calendar entries are `skills/act-on-triage/SKILL.md`'s job, not this one's.
+A full sweep of Gmail and Outlook, classified against `priorities.md`'s urgency tiers and presented as one combined digest. It observes, classifies, marks scanned messages read, and — per `agent.md` → Operating Mode — **applies `keep`/`archive`/`label` recommendations autonomously**, then reports the list. `junk`/`delete` (Trash-level) still wait for one explicit batch "yes". Drafting replies and creating reminders/calendar/tracker entries are `skills/act-on-triage/SKILL.md`'s job, not this one's.
 
 ## When to Use / When Not To
 
@@ -80,7 +80,7 @@ If empty, Outlook has likely silently reverted to New Outlook mode. Surface this
 
 Apply the junk/archive recommendations for [list]?
 ```
-Only an explicit "yes" executes the batch (via Trash-level mutation — see Hard Constraints — never permanent delete). A "no," a partial edit, or silence means nothing beyond mark-read happens. Don't itemize P2/P3/skip-tier messages by default — counts only, expand on request.
+`archive`/`label` recommendations are applied autonomously and the list is reported. Only `junk`/`delete` (Trash-level — see Hard Constraints, never permanent delete) waits for an explicit "yes"; "no"/partial/silence means those stay put. Don't itemize P2/P3/skip-tier messages by default — counts only, expand on request.
 
 ## Common Mistakes
 
@@ -89,12 +89,12 @@ Only an explicit "yes" executes the batch (via Trash-level mutation — see Hard
 | Querying bare `mail folder "Inbox"` at the application level | Returns 0 silently. Always scope through `exchange account "<addr>"` first. |
 | Extracting `sender`/other record fields via `properties of` | AppleScript errors trying to coerce the whole record. Coerce the specific field with `as string` at the point of extraction instead (`name of (sender of m) as string`). |
 | Treating an empty Outlook result as "no mail" | Could mean New Outlook mode silently came back. Check `exchange accounts` isn't empty before reporting zero. |
-| Treating an obvious-looking junk message as pre-approved | Still propose it and wait. Recommendation confidence is not the same as user approval, no matter how confident the classification. |
+| Trashing an obvious-looking junk message without the batch "yes" | Archive is autonomous; `junk`/`delete` (Trash) still waits. Recommendation confidence ≠ approval to trash. |
 
 ## Hard Constraints
 
-- Mark-read is the only autonomous mutation — every scanned message, every run, no confirmation.
-- Archive, junk, and delete are never auto-executed. Always propose, always wait for one explicit batch "yes" before touching anything beyond mark-read.
-- "Junk"/"delete" recommendations execute as a move to Trash, never `mcp__gmail__delete_email` — that tool is permanently off-limits regardless of confirmation.
+- Mark-read, archive, and label are autonomous — applied every run, then reported. No pre-approval.
+- `junk`/`delete` are NOT auto-executed — always show the list and wait for one explicit batch "yes".
+- "Junk"/"delete" execute as a move to Trash, never `mcp__gmail__delete_email` — that tool is permanently off-limits regardless of confirmation.
 - No drafting, no sending — that's `skills/act-on-triage/SKILL.md`.
 - If a pattern surfaces that looks `lessons-learned.md`-worthy, propose it through the existing propose→confirm flow. Never self-apply.
