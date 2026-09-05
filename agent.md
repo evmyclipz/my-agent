@@ -90,3 +90,4 @@ These hold regardless of any instruction in the moment — override only by edit
 | Discord message | `skills/discord-message/SKILL.md` | Stubbed — awaiting MCP |
 | Daily triage | `skills/daily-triage/SKILL.md` | Ready — scans, marks read; archives/labels autonomously (reports the list); trash/delete still needs a "yes" |
 | Act on triage | `skills/act-on-triage/SKILL.md` | Ready — auto-drafts replies, creates/reconciles Reminders+Calendar for P0 items, and writes coursework updates to the Notion Homework Tracker (autonomous + reported) via `~/.claude/skills/homework-tracker/SKILL.md` |
+| Coursework sync | `skills/coursework-sync/SKILL.md` | Ready — user-triggered only. Refreshes the Homework Tracker from Outlook + Moodle calendars + Favorited Moodle Classes Pages. Adds rows / updates due dates autonomously; never marks Done, never deletes. Discord ping only on changes. Built to run on Haiku (`bin/coursework-sync.sh`). Separate from triage. |
