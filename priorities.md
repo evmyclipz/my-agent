@@ -81,12 +81,7 @@ OUTLOOK_ACCOUNT=maliper@rose-hulman.edu
 List active projects in the order JZ should surface them in digests and status checks. Add entries using the project slugs from `projects.md`.
 
 ```
-1. spy-strat
-2. moto-mod
-3. hyper-agent
-4. shopping
-5. summer-travel
-6. minecraft-calc
+
 ```
 
 ---
@@ -101,7 +96,7 @@ List active projects in the order JZ should surface them in digests and status c
 
 1. ~~Connect Gmail MCP~~ — Connected 2026-08-11 via `claude.ai Gmail` connector, tools under `mcp__claude_ai_Gmail__*`.
 2. ~~Connect Outlook MCP~~ — superseded. Microsoft 365 MCP requires tenant admin access we don't have (school account); Outlook is read directly via `osascript` against Microsoft Outlook.app in Legacy mode instead (see `skills/daily-triage/SKILL.md`, `skills/email-read/SKILL.md`).
-3. Connect Discord MCP — `v-3/discordmcp` (simple read/send)
-4. Update `agent.md` — add Discord draft+confirm hard rule (no autonomous sends)
-5. Add `skills/discord-message/SKILL.md` stub
+3. Connect Discord MCP — `v-3/discordmcp` (simple read/send). Still the only open item here.
+4. ~~Update `agent.md` — add Discord draft+confirm hard rule~~ — done, Hard Rule 4.
+5. ~~Add `skills/discord-message/SKILL.md` stub~~ — done, exists as a stub awaiting the MCP.
 6. ~~Connect Todoist~~ — Connected 2026-08-11 via `claude.ai Todoist` connector, now the default target for `act-on-triage` tasks.

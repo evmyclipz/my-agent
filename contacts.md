@@ -70,12 +70,13 @@ Add entries as needed. You do not need to include every contact — only those w
 ## Michael
 
 - **Email(s):** Le13977367777@gmail.com
+- **Discord:** TKperson
 - **Inbox:** Gmail
-- **Relationship:** Best friend | Minecraft Calculator collaborator
+- **Relationship:** Best friend
 - **Default urgency tier:** P2
-- **Drafting notes:** Casual, sarcastic, jokey — can ask anything about Minecraft or tech
+- **Drafting notes:** Casual, sarcastic, jokey — anything goes on tech
 - **Routing notes:** None
-- **Tags:** #personal #projects #goofy #learning #buddy
+- **Tags:** #personal #buddy
 
 ---
 
@@ -88,5 +89,67 @@ Add entries as needed. You do not need to include every contact — only those w
 - **Drafting notes:** Formal and professional
 - **Routing notes:** None
 - **Tags:** #travel #finances #relocation
+
+---
+
+## Matt Bonilla
+
+- **Email(s):** bonillml@rose-hulman.edu
+- **Inbox:** Outlook
+- **Relationship:** Senior Design teammate, "Neuroprocessor"
+- **Default urgency tier:** P2
+- **Drafting notes:** Casual, teammate-to-teammate. From Mount Prospect, IL; CSSE major; R&D FPGA Intern @ Keysight Technologies — hardware/FPGA leaning. (Public LinkedIn/Rose-Hulman Instagram, not logged-in-verified.)
+- **Routing notes:** None
+- **Tags:** #school #senior-design
+
+## Thiago Henrique Costa
+
+- **Email(s):** costatf@rose-hulman.edu
+- **Inbox:** Outlook
+- **Relationship:** Senior Design teammate, "Neuroprocessor"
+- **Default urgency tier:** P2
+- **Drafting notes:** Casual, teammate-to-teammate. Computer Engineering (one older snippet said Mechanical Engineering & Math — may have switched majors); RTL & Computer Architecture focus. (Public LinkedIn snippets, not logged-in-verified — lower confidence than the others, common name.)
+- **Routing notes:** None
+- **Tags:** #school #senior-design
+
+## Brooklyn Jennings
+
+- **Email(s):** jenninbl@rose-hulman.edu
+- **Inbox:** Outlook
+- **Relationship:** Senior Design teammate, "Neuroprocessor"
+- **Default urgency tier:** P2
+- **Drafting notes:** Casual, teammate-to-teammate. From Tulsa, OK; Computer Engineering + NanoEngineering double major; IEEE-HKN (ECE honor society) member; cleanroom/fab experience; FPGA-adjacent research. (Public LinkedIn/IEEE-HKN page, not logged-in-verified.)
+- **Routing notes:** None
+- **Tags:** #school #senior-design
+
+## J.J. Moe
+
+- **Email(s):** moej@rose-hulman.edu
+- **Inbox:** Outlook
+- **Relationship:** Senior Design teammate, "Neuroprocessor"
+- **Default urgency tier:** P2
+- **Drafting notes:** Casual, teammate-to-teammate. No public LinkedIn found — only turned up Rose-Hulman honors/dean's-list news mentions (2025, 2026), no major/specialty confirmed.
+- **Routing notes:** None
+- **Tags:** #school #senior-design
+
+## Dr. Ahmed Sammoud
+
+- **Email(s):** 
+- **Inbox:** Outlook
+- **Relationship:** Senior Design (ECE 460) faculty mentor for Rohan's team ("Neuroprocessor")
+- **Default urgency tier:** P1
+- **Drafting notes:** Formal and professional
+- **Routing notes:** None
+- **Tags:** #school #senior-design
+
+## Dr. Daniel Chang / Dr. Mario Simoni
+
+- **Email(s):** 
+- **Inbox:** Outlook
+- **Relationship:** Project sponsors/clients for Senior Design team "Neuroprocessor" — Rohan's team reports to both
+- **Default urgency tier:** P1
+- **Drafting notes:** Formal and professional — external client relationship, not a classmate/prof chat
+- **Routing notes:** None
+- **Tags:** #school #senior-design
 
 
