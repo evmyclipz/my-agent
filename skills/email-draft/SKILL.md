@@ -1,3 +1,8 @@
+---
+name: email-draft
+description: Use when composing or drafting a new email or reply for review before sending. No MCP required — output is shown in chat; nothing is sent or saved without explicit user action.
+---
+
 # Skill: email-draft
 
 Compose and draft email. No MCP required — all output is shown in chat for user review. Nothing is sent or saved to any inbox without explicit user action.

@@ -1,3 +1,8 @@
+---
+name: email-read
+description: Use when reading, searching, or opening email across Gmail and Outlook inboxes outside of the daily-triage flow.
+---
+
 # Skill: email-read
 
 Read and search email across inboxes. Gmail is connected via `@gongrzhe/server-gmail-autoauth-mcp` (community MCP, credentials at `~/.gmail-mcp/credentials.json`). Outlook is read via `osascript` against Microsoft Outlook.app (Legacy mode) — no MCP involved; the account address is `OUTLOOK_ACCOUNT` in `priorities.md`.

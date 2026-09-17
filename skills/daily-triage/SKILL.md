@@ -13,7 +13,7 @@ A full sweep of Gmail and Outlook, classified against `priorities.md`'s urgency 
 
 - Fires on session start, or on a bare greeting with no substantive content attached ("Hi", "Yo", "Hey", "Run startup", "What's up", "Good morning").
 - Does **not** fire when a greeting is bundled with an actual ask (e.g. "hey can you check on the Ansh thread") — handle that request directly instead.
-- Runs every time it's triggered. No once-per-day gating — but scoped to **unread mail only** (see [[feedback_unread_only_triage]]). A full inbox snapshot is opt-in only, on explicit request.
+- Runs every time it's triggered. No once-per-day gating — but scoped to **unread mail from today (calendar day) only** (see [[feedback_unread_only_triage]], [[feedback_triage_today_only]]). Older unread backlog is explicitly out of scope for this skill — it is not scanned, not surfaced, and not mark-read. A full inbox snapshot or a backlog sweep is opt-in only, on explicit request.
 
 ## Pre-flight
 
@@ -26,31 +26,33 @@ Load before scanning:
 
 | Inbox | Mechanism | Scope |
 |---|---|---|
-| Gmail | `mcp__gmail__search_emails`, `query="in:inbox"`, high `maxResults` | full snapshot |
-| Outlook | `osascript` against `exchange account <OUTLOOK_ACCOUNT>` → `mail folder "Inbox"` | full snapshot |
+| Gmail | `search_threads`, `query="in:inbox is:unread after:<today>"` | unread, today only |
+| Outlook | `osascript` against `exchange account <OUTLOOK_ACCOUNT>` → `mail folder "Inbox"`, filtered to unread + received today | unread, today only |
 
 ## Implementation
 
-**Gmail** — one call, scoped to unread:
+**Gmail** — one call, scoped to unread AND today's calendar date (not a rolling 24h window — use the actual date, not `newer_than:1d`):
 ```
-# Tool: mcp__gmail__search_emails
-# Parameters: query="in:inbox is:unread", maxResults=<high, e.g. 100>
+# Tool: search_threads (or equivalent)
+# Parameters: query="in:inbox is:unread after:YYYY/MM/DD", where YYYY/MM/DD is today's date
 # Returns: list of {id, threadId, snippet, from, subject, date}
 ```
+Do not run a bare `is:unread` scan — that pulls in the entire historical unread backlog (which may span months or years), not just today's mail. If `after:<today>` still returns nothing because Gmail's date boundary rolled differently than expected, that's fine — report zero for today rather than falling back to the full unread scan.
 
-**Outlook** — via `osascript`, scoped through the exchange account (see Common Mistakes for why), filtered to unread. Iterate with an indexed `repeat ... item i of msgs` (not `repeat with m in msgs`) wrapped in `try`, since a bad record coercion on one message otherwise aborts the whole scan — see Common Mistakes:
+**Outlook** — via `osascript`, scoped through the exchange account (see Common Mistakes for why), filtered to unread AND received today. Iterate with an indexed `repeat ... item i of msgs` (not `repeat with m in msgs`) wrapped in `try`, since a bad record coercion on one message otherwise aborts the whole scan — see Common Mistakes:
 ```applescript
 tell application "Microsoft Outlook"
     set acct to exchange account "<OUTLOOK_ACCOUNT>"
     set theInbox to mail folder "Inbox" of acct
-    set msgs to messages of theInbox whose is read is false
+    set todayStart to (current date) - (time of (current date))
+    set msgs to messages of theInbox whose is read is false and time received ≥ todayStart
     -- per message, extract:
     --   subject of m as string
     --   name of (sender of m) as string
     --   time received of m as string
 end tell
 ```
-Note: this account's inbox carries a large legacy backlog (thousands of read messages) — the `whose is read is false` filter keeps the scan bounded to what's actually new.
+Note: this account's inbox carries a large legacy backlog (thousands of read messages, plus a large stale unread backlog) — the `is read is false and time received ≥ todayStart` filter keeps the scan bounded to what's actually new today.
 
 **Pre-flight guard** — before treating an Outlook result as "0 messages," first confirm `exchange accounts` returns non-empty:
 ```applescript

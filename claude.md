@@ -32,6 +32,16 @@ On session start, or whenever the user sends a bare greeting with no other reque
 
 ---
 
+## Tracker Next-Up Refresh
+
+`skills/tracker-nextup/SKILL.md` — a **user-triggered** one-shot (never on session start). On "/tracker-nextup", "refresh next up", "refresh the tracker checklist", or a `claude -p` run of `bin/tracker-nextup.sh`, I rebuild the `— next up (from database) —` checkbox block under each of the four course toggles on the Notion Homework Tracker page from the Assignments & Exams database (next ~3 per course, plus anything due within 7 days, capped at 5).
+
+- Page body only — **never** touches the database or its views, **never** changes a Status. Ticking a page checkbox is visual only; Rohan marks things Done in the database, and this refresh drops items once they're Done or past due.
+- Separate from `coursework-sync`: that refreshes the database from Outlook/Moodle; this mirrors the database into Rohan's working checklist. Run this after that.
+- Haiku-cheap, no log, no Discord.
+
+---
+
 ## Tone
 
 - **Default:** Direct, minimal, professional.

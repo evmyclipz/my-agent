@@ -1,6 +1,6 @@
 ---
 name: coursework-sync
-description: On-demand pipeline that refreshes the Notion Homework Tracker from Outlook + Moodle + the CSSE416 calendar sheet, so the user never has to open those apps. Manual trigger only ("/coursework-sync", "sync coursework", "refresh the tracker", or a `claude -p` run). NOT part of email triage.
+description: On-demand pipeline that refreshes the Notion Homework Tracker from Outlook + Moodle, so the user never has to open those apps. Manual trigger only ("/coursework-sync", "sync coursework", "refresh the tracker", or a `claude -p` run). NOT part of email triage.
 ---
 
 # Coursework Sync
@@ -31,7 +31,7 @@ Invocation examples:
 | Create new Assignments & Exams rows | Set any row's Status to **Done** |
 | Update an existing row's **Due Date** when a source shows a changed date | Delete or archive any row |
 | Update a row's Title/Type/Weight when a source clarifies it | Touch the Courses database |
-| Refresh the "Upcoming (2 wks)" view's date cutoff (view config, not a row) | Change any other view's filter/sort |
+| Refresh the "By course" view's date-filter cutoff (view config, not a row) | Change any other view's filter/sort |
 | Append to the sync log; send the Discord change-ping (see Reporting) | Send email; mark email read; edit Moodle; write anywhere outside the Homework Tracker |
 
 Marking things done is the user's job. This skill only keeps the *list* and the
@@ -39,7 +39,7 @@ Marking things done is the user's job. This skill only keeps the *list* and the
 
 ## Sources & how to read them
 
-Run all three. If one is unreachable, do the others and note the gap in the report —
+Run both. If one is unreachable, do the other and note the gap in the report —
 never abort the whole run.
 
 ### 1. Outlook (professor / Moodle / Gradescope mail) — `bin/outlook-scan.sh`
@@ -62,11 +62,11 @@ different approach.
 Keep a message if any is true:
 - sender domain is `rose-hulman.edu` or `gradescope.com`
 - sender name/address contains: `stamm`, `brooks`, `sammoud`, `terlep`, `walter`,
-  `minster`, `boutell`, `petrik`, `shibberu`
+  `power`, `boutell`, `petrik`, `shibberu`
 - subject contains: `moodle`, `assignment`, `homework`, `due`, `exam`, `quiz`,
   `lab`, `reading`, `project`, `MP`, a course code (`ECE`, `CSSE`, `MA`, `ENGL`),
-  or a course nickname (`deep learning`, `malware`, `reverse eng`, `romanticism`,
-  `senior design`)
+  or a course nickname (`deep learning`, `malware`, `reverse eng`, `science fiction`,
+  `scifi`, `sci-fi`, `senior design`)
 
 For each kept message pull `subject`, `address of sender`, `time received`,
 `plain text content`, and `id`. Extract any assignment/exam/reading and its due
@@ -82,7 +82,7 @@ regardless of the real session state — that result is meaningless and must not
 reported as "Moodle skipped: not logged in." If the browser tools aren't available,
 say so explicitly in the report instead of substituting another tool.
 
-Calendars alone under-report: RevEng/Romanticism/Senior Design post deliverables as
+Calendars alone under-report: RevEng/Science Fiction/Senior Design post deliverables as
 course content (weekly sections, a syllabus, a scheduled "Draft Schedule" PDF) that
 never makes it onto the Moodle calendar block. Scan both. One tab, reused across all
 of this.
@@ -97,37 +97,46 @@ store date-only.
 click "Open all topics"/"Open all" if present, `get_page_text`. Look for graded
 deliverables (quizzes, reflections, MPs, tests, essays, homeworks) with a stated due
 day. If the course links a **syllabus/schedule file** (PDF, docx, xlsx) that carries
-the actual date grid — Romanticism's "Draft Schedule", RevEng's syllabus — open the
+the actual date grid — Science Fiction's syllabus PDF (`ENG237-FALL26.pdf`, carries the full Week 0–10 class schedule + the two essay due dates), RevEng's syllabus — open the
 resource link; if it renders as an inline PDF with no extractable text, navigate to
 the same `pluginfile.php` URL with `?forcedownload=1` appended to force it into
 `~/Downloads/`, then read the downloaded file directly (`Read` handles PDF/docx).
 Only re-parse a schedule file if its Moodle-reported modified date is newer than the
 last sync (skip re-downloading an unchanged one — check the log). `Source` key:
-`moodle:<courseid>-schedule-<slugified item>` (e.g. `moodle:124416-schedule-quiz1`).
+`moodle:<courseid>-schedule-<slugified item>` (e.g. `moodle:124962-schedule-essay1`).
 
 | Course | Moodle id | Notion Course URL |
 |---|---|---|
-| Deep Learning (CSSE416) | `124332` | `https://app.notion.com/p/3cac25483c8381a68916edd6d33f712c` |
+| Deep Learning (CSSE416) | `124332` | `https://app.notion.com/p/3cac25483c8381a68916edd6d33f712c` (DL posts almost nothing to its Moodle calendar/content — its full-term schedule was already imported from the CSSE416 course-calendar Google Sheet once, on 2026-09-15, and confirmed to match the tracker row-for-row (H1–H9, Q1–Q5, Tests, project milestones). This skill no longer re-reads that sheet every run — see note below. Still scan 124332's Moodle calendar/content each run in case something *does* post there.) |
 | RevEng / Malware Analysis (ECE497) | `124443` | `https://app.notion.com/p/3c9c25483c8381b8aa9cdb742c9fbb57` |
 | Senior Design I (ECE460) | `125529` | `https://app.notion.com/p/3c9c25483c8381cc80f4c91c5e77936a` (also check `124740`, the combined Master Senior Design course, for pre-team-assignment deliverables like the Syllabus Quiz) |
-| Romanticism (ENGLH337) | `124416` | `https://app.notion.com/p/3cac25483c83815f9b73f3c0bb6231b8` |
+| Science Fiction (ENGLH237) | `124962` | `https://app.notion.com/p/3d5c25483c83812e9f90c26edde306f4` | (Prof. Lucas Power; reflections Weeks 1–10 have no Moodle deadline — the only dated Moodle items are Essay 1 & Essay 2) |
 
 If the first page load lands on `login/index.php` ("session has timed out"):
-**stop the entire Moodle step (2a and 2b)**, put one line in the report — "Moodle
-skipped: not logged in. Open moodle.rose-hulman.edu, sign in with Rose SSO, then
-re-run." — and continue with the other sources. Do not attempt to log in.
+
+- **Interactive session (`/coursework-sync`, "sync coursework", etc. typed live in
+  chat):** do NOT stop or skip. Tell the user in chat that Moodle needs a fresh
+  login — "Open moodle.rose-hulman.edu, sign in with Rose SSO, then tell me when
+  you're in" — and wait for their reply. Do not attempt to log in yourself, and
+  don't proceed with Outlook-only reconciliation in the meantime; once they confirm,
+  retry the same URL and continue 2a/2b normally. Run Outlook first (step 1) while
+  you're waiting isn't necessary — order doesn't matter, but don't report a partial
+  "Moodle skipped" result just because you hit the login wall once.
+- **Headless run (`claude -p`, `bin/coursework-sync.sh`, no one watching):** there's
+  no one to wait for. Stop the Moodle step (2a and 2b), put one line in the report —
+  "Moodle skipped: not logged in. Open moodle.rose-hulman.edu, sign in with Rose SSO,
+  then re-run." — and continue with Outlook. Do not attempt to log in.
 
 Weekly-topic sections with no content yet (e.g. RevEng Wk 2–10 before that week
 arrives) are normal — don't report them as a gap, just nothing to extract yet.
 
-### 3. CSSE416 course calendar — Google Drive MCP
-
-`mcp__claude_ai_Google_Drive__read_file_content` with
-`fileId: 1uOxtHLsbPy1WAp-yOryfO4jxuiQVtRiwBAlUTKIQ7nk`. This is the authoritative DL
-schedule (H1–H9, Q1–Q5, Tests, project milestones). Homeworks/Lessons are due
-**11:00 PM ET**; status reports / slides due **3:00 PM ET**; quizzes & tests are
-in-class (store date-only). Skip the vague weekly "Due: Random Lesson" entries and
-uncollected examples/demos. `Source` key: `gsheet:416-<item>` (e.g. `gsheet:416-H3`).
+**No third source.** This skill used to also re-read the CSSE416 course-calendar
+Google Sheet every run (`gsheet:416-*` Source keys still exist on existing DL rows
+from that import — leave them as-is, don't touch or re-derive them). That sheet is
+static for the term and was already fully reconciled into the tracker on
+2026-09-15 — re-fetching it every run was pure overhead for data that never
+changes. If Boutell ever revises the DL schedule, Rohan will say so and it can be
+re-pulled by hand; don't add it back into the routine sync.
 
 ## Reconcile → write (per `~/.claude/skills/homework-tracker/SKILL.md`)
 
@@ -150,21 +159,29 @@ uncollected examples/demos. `Source` key: `gsheet:416-<item>` (e.g. `gsheet:416-
 4. Page body: dated items never go here (see `homework-tracker` SKILL.md — the
    Upcoming view is the near-term surface now). Only touch a toggle if you found a
    genuinely non-dated action item (e.g. "waiting on X's reply").
-5. **Refresh the rolling "Upcoming (2 wks)" view — every run, even if nothing else
-   changed:** `notion-update-view` on `view://3d1c2548-3c83-8197-a6f2-000c773383bd`
-   with `configure: 'CLEAR FILTER; FILTER "Due Date" <= "<today + 14 days, ISO>" AND
-   "Status" != "Done"; SORT BY "Due Date" ASC'`. This is what makes items "unhide as
-   weeks progress" — the filter is a static date, not a live relative one (the
+5. **Refresh the rolling filter on the "By course" view — every run, even if
+   nothing else changed:** `notion-update-view` on
+   `view://5c9e8f9c-3ce8-4d93-bbfe-341c8582d774` with `configure: 'CLEAR FILTER;
+   FILTER "Due Date" <= "<today + 14 days, ISO>" AND "Status" != "Done"; GROUP BY
+   "Course"; SORT BY "Due Date" ASC'`. (2026-09-04: moved here from the old
+   standalone "Upcoming (2 wks)" view — Rohan wants the rolling filter on the
+   grouped-by-course view itself, all 4 courses, instead of a separate flat view.
+   Re-issuing `GROUP BY "Course"` every call is deliberate — it forces Notion to
+   recompute the group list, which is the fix for a course's section silently
+   failing to render after an API-driven write.) This is what makes items "unhide"
+   as weeks progress — the filter is a static date, not a live relative one (the
    connector doesn't support `NOW()+Nd` or filtering on formula properties), so it
    only advances when this skill runs. Note the new cutoff in the log line.
+   The old `view://3d1c2548-3c83-8197-a6f2-000c773383bd` ("Upcoming (2 wks)") still
+   exists — no delete-view tool available — but this skill no longer touches it.
 
 ## Reporting
 
 1. **Always** append one entry to `/Users/mrohan/Documents/my-agent/logs/coursework-sync.log`
    (create the `logs/` dir if missing):
    ```
-   [YYYY-MM-DD HH:MM] sources: outlook=ok moodle=ok|skipped gsheet=ok
-   upcoming-view cutoff -> <new date>
+   [YYYY-MM-DD HH:MM] sources: outlook=ok moodle=ok|skipped
+   By-course cutoff -> <new date>
    + added:   <course> · <title> · <type> · <due>
    ~ updated: <course> · <title> · <old due> -> <new due>
    (no changes)   <- if nothing added/updated (the cutoff still refreshes regardless)

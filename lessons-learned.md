@@ -76,3 +76,17 @@ Behavioral corrections and confirmed adjustments. JZ proposes entries here; the 
 **Correction:** For a known-working tool that fails intermittently, retry exactly once; if it still fails, surface the specific error to the user rather than classifying the integration as unavailable.
 **Scope:** general
 **Status:** Confirmed
+
+### 2026-09-11 — Daily triage scans today's unread mail only, not the full unread backlog
+
+**Pattern observed:** Ran daily triage with a bare `is:unread` scan (both Gmail and Outlook). The Gmail account had a large never-cleared unread backlog going back to 2022; JZ spent the session paging through and mark-reading ~360 old threads before Rohan corrected that triage should only ever look at today's mail.
+**Correction:** Daily triage scopes to unread mail received **today** (calendar day) only — Gmail: `is:unread after:<today>`, not a bare `is:unread`; Outlook: `is read = false` AND `time received` within today. Older unread backlog is out of scope entirely — not scanned, not surfaced, not mark-read. A full-history unread sweep is opt-in only, on explicit request.
+**Scope:** email triage
+**Status:** Confirmed
+
+### 2026-09-08 — "Set up the homework" means a skeleton, never the answers
+
+**Pattern observed:** Asked to "set up" Deep Learning H1 under `Homework/`. JZ built the notebook with a working, tested Problem 1 solution and the Problem 2 code pre-pasted, and executed it. Rohan corrected: he wanted the assignment read and broken into parts, with markdown describing what each part should do and empty cells to work through — not a solution.
+**Correction:** Never put homework answers or solution code in Rohan's files unless he explicitly asks ("give me the answer", "just solve it"). Scaffolding a homework = part-by-part breakdown in markdown + empty code cells + all provided course files (assignment PDF, hint, solution) pulled into the folder + a submission checklist. No implementation, no pre-run outputs, no pasted instructor code. Applies to all coursework.
+**Scope:** general
+**Status:** Confirmed

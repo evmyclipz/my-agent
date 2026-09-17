@@ -1,3 +1,8 @@
+---
+name: discord-message
+description: Use when reading, searching, or drafting a Discord DM or channel message. Discord MCP is NOT CONNECTED YET — this skill is currently a stub.
+---
+
 # Skill: discord-message
 
 Read and draft Discord messages. Discord MCP is **NOT CONNECTED YET** — this skill is a stub.
