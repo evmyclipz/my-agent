@@ -117,6 +117,7 @@ Add entries as needed. You do not need to include every contact — only those w
 - **Email(s):** jenninbl@rose-hulman.edu
 - **Inbox:** Outlook
 - **Relationship:** Senior Design teammate, "Neuroprocessor"
+- **Pronouns:** he/him (confirmed by Rohan 2026-09-21)
 - **Default urgency tier:** P2
 - **Drafting notes:** Casual, teammate-to-teammate. From Tulsa, OK; Computer Engineering + NanoEngineering double major; IEEE-HKN (ECE honor society) member; cleanroom/fab experience; FPGA-adjacent research. (Public LinkedIn/IEEE-HKN page, not logged-in-verified.)
 - **Routing notes:** None
@@ -129,6 +130,16 @@ Add entries as needed. You do not need to include every contact — only those w
 - **Relationship:** Senior Design teammate, "Neuroprocessor"
 - **Default urgency tier:** P2
 - **Drafting notes:** Casual, teammate-to-teammate. No public LinkedIn found — only turned up Rose-Hulman honors/dean's-list news mentions (2025, 2026), no major/specialty confirmed.
+- **Routing notes:** None
+- **Tags:** #school #senior-design
+
+## Dr. Sammoud
+
+- **Email(s):** 
+- **Inbox:** Outlook
+- **Relationship:** ECE460 Senior Design course instructor/advisor — distinct from project sponsor clients Dr. Simoni and Dr. Chang. Confirmed by Rohan 2026-09-22.
+- **Default urgency tier:** P1
+- **Drafting notes:** Formal and professional — faculty, course-oversight relationship.
 - **Routing notes:** None
 - **Tags:** #school #senior-design
 

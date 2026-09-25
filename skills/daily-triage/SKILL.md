@@ -46,12 +46,29 @@ tell application "Microsoft Outlook"
     set theInbox to mail folder "Inbox" of acct
     set todayStart to (current date) - (time of (current date))
     set msgs to messages of theInbox whose is read is false and time received ≥ todayStart
-    -- per message, extract:
-    --   subject of m as string
-    --   name of (sender of m) as string
-    --   time received of m as string
+    repeat with i from 1 to count of msgs
+        set m to item i of msgs
+        set s to "?"
+        set n to "?"
+        set a to "?"
+        set t to "?"
+        -- one try per field: a single failing coercion must not drop the whole message
+        try
+            set s to subject of m
+        end try
+        try
+            set sd to sender of m
+            set n to name of sd
+            set a to address of sd
+        end try
+        try
+            set t to (time received of m) as string
+        end try
+        -- append i | n <a> | s | t to output
+    end repeat
 end tell
 ```
+**Count/detail mismatch guard** — always return `count of msgs` alongside the rows. If the count is > 0 but no rows came back, the extraction failed silently (happened 2026-09-23 with a single `try` wrapping all fields) — re-scan with per-field `try`s, never report zero.
 Note: this account's inbox carries a large legacy backlog (thousands of read messages, plus a large stale unread backlog) — the `is read is false and time received ≥ todayStart` filter keeps the scan bounded to what's actually new today.
 
 **Pre-flight guard** — before treating an Outlook result as "0 messages," first confirm `exchange accounts` returns non-empty:
@@ -66,16 +83,21 @@ If empty, Outlook has likely silently reverted to New Outlook mode. Surface this
 
 **Mark-read** (autonomous, every run, no confirmation — the one exception to agent.md rule 2):
 ```
-# Gmail: mcp__gmail__batch_modify_emails, removeLabelIds=["UNREAD"], messageIds=<all scanned ids>
+# Gmail: mcp__claude_ai_Gmail__unlabel_thread, labelIds=["UNREAD"], one call per scanned thread (no batch-modify tool exists here)
 # Outlook: osascript — set is read of m to true, for each scanned message
 ```
 
 **Recommend an action** per message — `keep` / `archive` / `junk` / `delete` — based on its tier and the hygiene rules in `priorities.md` (e.g. a sender matching a known junk-filter target recommends `junk`; P0/P1 recommends `keep`; P3/skip-tier recommends `archive` or `junk` by judgment).
 
+**TLDR brief** (added 2026-09-23 at Rohan's request) — if today's scan includes a TLDR newsletter (`dan@tldrnewsletter.com`, either inbox), read its body (Outlook: `plain text content of m`; Gmail: `get_thread`) and write a 4–5 bullet brief of the stories most relevant to Rohan's background: ECE/CSSE senior, Senior Design neuroprocessor / edge-AI hardware, Edge AI grad-school search, deep learning, reverse engineering / security, `spy-strat` markets research, AI-agent tooling (JZ), and 2027 new-grad job hunt. One line per bullet — what happened + why it matters to him. Skip sponsor blocks and stories with no angle for him. TLDR itself stays in the inbox (protected newsletter); still counts as scanned/mark-read. If no TLDR arrived today, omit the section — don't go looking for older issues.
+
 **Output** — see [[feedback_digest_format]]: short, leads with what needs a response, everything else collapsed to counts:
 ```
 🔴 Needs you (P0/P1)
 - [Inbox] Sender — Subject → why it matters
+
+📰 TLDR brief (only if a TLDR arrived today)
+- 4–5 bullets, most relevant to Rohan first
 
 🟡 Everything else
 - N × P2, N × P3, N × junk/promo (say the word to expand any bucket)

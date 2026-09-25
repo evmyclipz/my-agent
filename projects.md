@@ -30,11 +30,12 @@ Active project registry. JZ uses this file to contextualize email, surface relev
 - **Slug:** `senior-design`
 - **Status:** Active
 - **Inbox(es):** Outlook
-- **Summary:** ECE 460 Capstone Design. Assigned 2026-09-04 to project "Neuroprocessor" (Rohan's #1 preference). Team: Matt Bonilla, Thiago Henrique Costa, Brooklyn Jennings, J.J. Moe, Rohan Malipeddi. Faculty mentor: Dr. Ahmed Sammoud. Reports to two project sponsors/clients: Dr. Mario Simoni and Dr. Daniel Chang.
-- **Next action:** Team email introductions this week, then the team reaches out to Simoni/Chang to schedule a kickoff meeting to learn about the application/need.
+- **Summary:** ECE 460 Capstone Design. Assigned 2026-09-04 to project "Neuroprocessor" (Rohan's #1 preference). Team: Matt Bonilla, Thiago Henrique Costa, Brooklyn Jennings, J.J. Moe, Rohan Malipeddi. Faculty mentor: Dr. Ahmed Sammoud. Reports to two project sponsors/clients: Dr. Mario Simoni and Dr. Daniel Chang. Weekly advisor meeting with Dr. Sammoud (Wed, J203). Platform decision: ASIC/Caravel path dead post-Efabless → moving to Kria KR260 FPGA.
+- **Next action:** Rohan's assignment (2026-09-23): research the AMD Kria KR260 for migrating the current Caravel SoC design onto it — clients are committed to moving entirely to KR260. Deliverable = one research memo per paper/video/math source (AI-drafting approved by team + advisor; format: `02-researchMemo.docx` — heading w/ title, author, creation date, team/project; why it fits the project; technical summary; bibliography; figures; change log; posted to team SharePoint). First two sources: Beaubois et al. 2024 (fnins.2024.1457774, KR260 HH emulator) — important sections read 2026-09-24, research memo #1 next; Miedema et al. 2024 ExaFlexHH (fninf.2024.1330875) — reading Fri 9/25.
+- **Weekly memo:** team memo to instructor + client every week (format: `01-weeklyMemoAssignment-2627.docx` — SMART tasks w/ owner + due date + hours, labor-cost table, feedback sections), placed in MS Teams folder, due before 2 PM every Wednesday. Must be **human-written** — JZ may turn meeting minutes into raw content for Rohan to pick from, but never writes the memo text itself.
 - **Key contacts:** Dr. Ahmed Sammoud (mentor), Dr. Mario Simoni + Dr. Daniel Chang (sponsors) — see `contacts.md`
 - **Notes:** Coursework deliverables (syllabus quiz, etc.) for ECE 460 live in the Notion Homework Tracker, not here — this entry tracks the team/client relationship side, which the tracker doesn't cover.
-- **Last updated:** 2026-09-04
+- **Last updated:** 2026-09-25
 
 ---
 

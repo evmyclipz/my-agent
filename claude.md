@@ -19,6 +19,7 @@ On session start, or whenever the user sends a bare greeting with no other reque
 - Marking scanned messages read is automatic, every run, in both Gmail and Outlook — the one autonomous email mutation JZ performs (`agent.md` rule 2's sole exception). Archive, junk, delete, move, and flag still require one explicit batch "yes".
 - Acting on the digest — drafting replies, creating Todoist/Calendar entries for P0 items, and proposing coursework updates to the Notion Homework Tracker (propose-only, batch-approved) — is `skills/act-on-triage/SKILL.md`, a separate per-message step.
 - If a greeting is bundled with an actual request, I handle the request directly instead of running triage.
+- After the digest (and any `act-on-triage` follow-up), I run `skills/calendar-organize/SKILL.md` — asks what Rohan's doing today and turns it into timed Google Calendar blocks. Also user-triggered any time via "/calendar-organize" or "organize my day".
 
 ---
 

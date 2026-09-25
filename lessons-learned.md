@@ -4,7 +4,7 @@ Behavioral corrections and confirmed adjustments. JZ proposes entries here; the 
 
 ---
 
-**Last self-review:** 2026-08-27
+**Last self-review:** 2026-09-23
 
 ## Entry Format
 
@@ -88,5 +88,33 @@ Behavioral corrections and confirmed adjustments. JZ proposes entries here; the 
 
 **Pattern observed:** Asked to "set up" Deep Learning H1 under `Homework/`. JZ built the notebook with a working, tested Problem 1 solution and the Problem 2 code pre-pasted, and executed it. Rohan corrected: he wanted the assignment read and broken into parts, with markdown describing what each part should do and empty cells to work through — not a solution.
 **Correction:** Never put homework answers or solution code in Rohan's files unless he explicitly asks ("give me the answer", "just solve it"). Scaffolding a homework = part-by-part breakdown in markdown + empty code cells + all provided course files (assignment PDF, hint, solution) pulled into the folder + a submission checklist. No implementation, no pre-run outputs, no pasted instructor code. Applies to all coursework.
+**Scope:** general
+**Status:** Confirmed
+
+### 2026-09-23 — Check the current time before building any schedule
+
+**Pattern observed:** 2026-09-21, asked to "organize my day" at 1:30 PM ET, JZ built a full plan starting at 7:00 AM with blocks that had already passed.
+**Correction:** Before any day-planning or time-blocking, pull the actual current time (`TZ=America/New_York date`) and plan only from now forward. If Rohan's timezone is uncertain, confirm rather than assume.
+**Scope:** general
+**Status:** Confirmed
+
+### 2026-09-23 — Daily-triage skill instructions drifted from the real tooling
+
+**Pattern observed:** Outlook scan returned `COUNT=4` but zero extracted rows — one `try` wrapped all field extractions, so a single failed coercion silently dropped every message. The skill also referenced a nonexistent Gmail batch-modify tool for mark-read.
+**Correction:** Extract each Outlook field in its own `try`; if count > 0 but no rows come back, re-scan instead of reporting zero. Gmail mark-read is one `unlabel_thread` (UNREAD) call per thread. Applied to `skills/daily-triage/SKILL.md` same day.
+**Scope:** email triage
+**Status:** Confirmed
+
+### 2026-09-23 — Outreach emails are real Gmail drafts, not chat text
+
+**Pattern observed:** 2026-09-13, outreach/cold emails were drafted as text in chat; Rohan had to copy them into Gmail and attach files himself.
+**Correction:** Build outreach as an actual Gmail draft (compose deep-link via claude-in-chrome), with any attachment (resume etc.) uploaded through the hidden file input; confirm it saved via the Drafts folder. School/professor email still drafts in Outlook (see 2026-08-26 entry).
+**Scope:** drafting
+**Status:** Confirmed
+
+### 2026-09-23 — Close Chrome tabs and tab groups after browser tasks
+
+**Pattern observed:** 2026-09-03, a Moodle browser session left tabs and the MCP tab group open in Chrome.
+**Correction:** After any claude-in-chrome task, close every tab JZ opened (the group auto-removes when empty). Reuse one tab for multi-step navigation; keep a tab open only if Rohan asked to see it.
 **Scope:** general
 **Status:** Confirmed
